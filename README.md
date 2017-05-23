@@ -3,8 +3,8 @@
 beeson wrapper for express-rpc
 
 ```JS
-var myPromiseBaseModule = require('my-promise-based-module');
-var { middleware: rpcMiddleware } = require('express-rpc-beeson')(myPromiseBaseModule);
+const myPromiseBaseModule = require('my-promise-based-module');
+const { middleware: rpcMiddleware } = require('express-rpc-beeson')(myPromiseBaseModule);
 
 // ...
 
