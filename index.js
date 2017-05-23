@@ -21,8 +21,19 @@ module.exports = function(module, options = {}) {
         extract, success, error
     })(module, options);
 
-    return function(req, res, next) {
-        if (req.body) middleware(req, res, next);
-        else parser(req, res, middleware);
+    return {
+        middleware: function(req, res, next) {
+            if (req.body) middleware(req, res, next);
+            else parser(req, res, middleware);
+        },
+        rpc: function(requester) {
+            return function rpc(host, method, args = [], options = {}) {
+                const port = options.port || 5000;
+                const basePath = options.basePath || '';
+
+                return requester({host, port, path: (basePath ? `/${basePath}` : '') + `/${method}`}, {body: serialize(args)})
+                    .then(response => deserialize(response.body));
+            };
+        }
     };
 };
