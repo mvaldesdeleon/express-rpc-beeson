@@ -26,7 +26,7 @@ module.exports = function(module, options = {}) {
             if (req.body) middleware(req, res, next);
             else parser(req, res, middleware);
         },
-        rpc: function(requester) {
+        consumeWith: function(requester) {
             return function rpc(host, method, args = [], options = {}) {
                 const port = options.port || 5000;
                 const basePath = options.basePath || '';
