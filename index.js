@@ -8,7 +8,7 @@ const extract = req => ({
 });
 // TODO: add beeson content-header?
 const success = (res, retVal) => res.status(200).send(serialize(retVal));
-const error = (res, status, err) => res.status(status).send(err.stack);
+const error = (res, status, err) => res.status(status).send(serialize(err));
 
 module.exports = function(module, options = {}) {
     const parser = raw({
@@ -32,6 +32,15 @@ module.exports = function(module, options = {}) {
                 const basePath = options.basePath || '';
 
                 return requester({host, port, path: (basePath ? `/${basePath}` : '') + `/${method}`}, {body: serialize(args)})
+                    .catch(err => {
+                        if (err.response) {
+                            let rpcError = deserialize(err.response.body);
+
+                            err.stack = `From ${host}:${port}${path}:\n${rpcError.stack}\n\n${err.stack}`;
+                        }
+
+                        return Promise.reject(err);
+                    })
                     .then(response => deserialize(response.body));
             };
         }
