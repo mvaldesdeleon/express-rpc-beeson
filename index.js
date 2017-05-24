@@ -35,8 +35,9 @@ module.exports = function(module, options = {}) {
                     .catch(err => {
                         if (err.response) {
                             let rpcError = deserialize(err.response.body);
+                            rpcError.stack = rpcError.stack || '(No stack available)';
 
-                            err.stack = `From ${host}:${port}${err.response.path}:\n${rpcError.stack}\n\n${err.stack}`;
+                            err.stack = `From ${host}:${port}${err.path}:\n${rpcError.stack}\n\n${err.stack}`;
                         }
 
                         return Promise.reject(err);
