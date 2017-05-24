@@ -24,7 +24,7 @@ module.exports = function(module, options = {}) {
     return {
         middleware: function(req, res, next) {
             if (req.body) middleware(req, res, next);
-            else parser(req, res, middleware);
+            else parser(req, res, () => middleware(req, res, next));
         },
         consumeWith: function(requester) {
             return function rpc(host, method, args = [], options = {}) {
@@ -36,7 +36,7 @@ module.exports = function(module, options = {}) {
                         if (err.response) {
                             let rpcError = deserialize(err.response.body);
 
-                            err.stack = `From ${host}:${port}${path}:\n${rpcError.stack}\n\n${err.stack}`;
+                            err.stack = `From ${host}:${port}${err.response.path}:\n${rpcError.stack}\n\n${err.stack}`;
                         }
 
                         return Promise.reject(err);
