@@ -1,6 +1,6 @@
 {
   "name": "express-rpc-beeson",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "beeson wrapper for express-rpc",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "dependencies": {
     "beeson": "0.0.3",
     "body-parser": "^1.17.2",
-    "express-rpc": "0.0.2"
+    "express-rpc": "0.0.3"
   },
   "devDependencies": {
     "eslint": "^3.19.0"
