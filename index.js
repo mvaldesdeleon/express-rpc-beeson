@@ -1,6 +1,6 @@
 const { serialize, deserialize } = require('beeson');
 const { raw } = require('body-parser');
-const { rpc } = require('express-rpc');
+const rpc = require('express-rpc');
 
 const extract = req => ({
     method: req.path.split('/')[1],
