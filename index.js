@@ -28,7 +28,7 @@ module.exports = function(module, options = {}) {
         },
         consumeWith: function(requester) {
             return function rpc(host, method, args = [], options = {}) {
-                const port = options.port || 5000;
+                const port = options.port;
                 const basePath = options.basePath || '';
 
                 return requester({host, port, path: (basePath ? `/${basePath}` : '') + `/${method}`}, {body: serialize(args)})
