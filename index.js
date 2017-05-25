@@ -8,7 +8,13 @@ const extract = req => ({
 });
 // TODO: add beeson content-header?
 const success = (res, retVal) => res.status(200).send(serialize(retVal));
-const error = (res, status, err) => res.status(status).send(serialize(err));
+const toObject = err => ({
+    message: err.message,
+    stack: err.stack,
+    stacks: err.stacks,
+    hops: err.hops
+});
+const error = (res, status, err) => res.status(status).send(serialize(toObject(err)));
 
 module.exports = function(module, options = {}) {
     const parser = raw({
@@ -31,13 +37,15 @@ module.exports = function(module, options = {}) {
                 const port = options.port;
                 const basePath = options.basePath || '';
 
-                return requester({host, port, path: (basePath ? `/${basePath}` : '') + `/${method}`}, {body: serialize(args)})
+                return requester({ host, port, path: (basePath ? `/${basePath}` : '') + `/${method}` }, { body: serialize(args) })
                     .catch(err => {
                         if (err.response) {
-                            let rpcError = deserialize(err.response.body);
-                            rpcError.stack = rpcError.stack || '(No stack available)';
+                            const rpcError = deserialize(err.response.body);
+                            const hop = { host, port, path: err.path };
 
-                            err.stack = `From ${host}:${port}${err.path}:\n${rpcError.stack}\n\n${err.stack}`;
+                            rpcError.stack = rpcError.stack || '(No stack available)';
+                            err.stacks = rpcError.stacks ? rpcError.stacks.concat(rpcError.stack) : [rpcError.stack];
+                            err.hops = rpcError.hops ? rpcError.hops.concat(hop) : [hop]
                         }
 
                         return Promise.reject(err);
