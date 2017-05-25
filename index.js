@@ -8,12 +8,7 @@ const extract = req => ({
 });
 // TODO: add beeson content-header?
 const success = (res, retVal) => res.status(200).send(serialize(retVal));
-const toObject = err => ({
-    message: err.message,
-    stack: err.stack,
-    stacks: err.stacks,
-    hops: err.hops
-});
+const toObject = err => Object.getOwnPropertyNames(err).reduce((obj, prop) => Object.assign(obj, { [prop]: err[prop] }), {});
 const error = (res, status, err) => res.status(status).send(serialize(toObject(err)));
 
 module.exports = function(module, options = {}) {
@@ -45,7 +40,7 @@ module.exports = function(module, options = {}) {
 
                             rpcError.stack = rpcError.stack || '(No stack available)';
                             err.stacks = rpcError.stacks ? rpcError.stacks.concat(rpcError.stack) : [rpcError.stack];
-                            err.hops = rpcError.hops ? rpcError.hops.concat(hop) : [hop]
+                            err.hops = rpcError.hops ? rpcError.hops.concat(hop) : [hop];
                         }
 
                         return Promise.reject(err);
